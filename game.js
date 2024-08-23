@@ -93,20 +93,20 @@ const battle = async (stage, player, monster) => {
         logs.push(chalk.green(`${monster.name}를 공격! `));
         if (success(player.crit)) { // 치명타 발생
           logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!`));
-          logs.push(chalk.gray(` \t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.critatk(monster);
+          logs.push(chalk.gray(` \t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
         } else {
           logs.push(chalk.yellow(`${player.atk}의 데미지!`));
-          logs.push(chalk.gray(` \t\t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.attack(monster);
+          logs.push(chalk.gray(` \t\t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
         }
         break;
       case '2':
         logs.push(chalk.green(`치명타를 노린 공격! `));
         if (success(player.crit * 2)) { // 치명타 발생
           logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!`));
-          logs.push(chalk.gray(` \t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.critatk(monster);
+          logs.push(chalk.gray(` \t\t(남은 몬스터 체력: ${monster.hp})\n`))
         } else {
           logs.push(chalk.gray(`무리해서 공격이 빗나가버렸다..`));
           logs.push(chalk.gray(` \t(남은 몬스터 체력: ${monster.hp})\n`))
