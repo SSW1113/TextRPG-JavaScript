@@ -35,10 +35,10 @@ class Player {
 }
 
 class Monster {
-  constructor(name) {
+  constructor(name, hp, atk) {
     this.name = name;
-    this.hp = 25;
-    this.atk = 7;
+    this.hp = hp;
+    this.atk = atk;
   }
 
   attack(target) {
@@ -71,12 +71,14 @@ function displayStatus(floor, player, monster) {
 const battle = async (stage, player, monster) => {
   let logs = [];
   let run;
+  logs.push(chalk.green(`${monster.name}와 마주쳤다!\n`));
 
   while (player.hp > 0 && monster.hp > 0) {
     console.clear();
     displayStatus(stage, player, monster);
 
     logs.forEach((log) => process.stdout.write(log));
+    
 
     console.log(
       chalk.green(
@@ -88,22 +90,26 @@ const battle = async (stage, player, monster) => {
     // logs.push(chalk.green(`${choice}를 선택하셨습니다.`));
     switch (choice) {
       case '1':
-        logs.push(chalk.green(`몬스터를 공격! `));
+        logs.push(chalk.green(`${monster.name}를 공격! `));
         if (success(player.crit)) { // 치명타 발생
-          logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!\n`));
+          logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!`));
+          logs.push(chalk.gray(` \t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.critatk(monster);
         } else {
-          logs.push(chalk.yellow(`${player.atk}의 데미지!\n`));
+          logs.push(chalk.yellow(`${player.atk}의 데미지!`));
+          logs.push(chalk.gray(` \t\t\t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.attack(monster);
         }
         break;
       case '2':
         logs.push(chalk.green(`치명타를 노린 공격! `));
         if (success(player.crit * 2)) { // 치명타 발생
-          logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!\n`));
+          logs.push(chalk.redBright(`치명타!! ${Math.floor(player.atk * player.critdmg)}의 데미지!!!`));
+          logs.push(chalk.gray(` \t\t(남은 몬스터 체력: ${monster.hp})\n`))
           player.critatk(monster);
         } else {
-          logs.push(chalk.gray(`무리하게 공격하는 바람에 공격이 빗나가 버렸다..\n`));
+          logs.push(chalk.gray(`무리해서 공격이 빗나가버렸다..`));
+          logs.push(chalk.gray(` \t(남은 몬스터 체력: ${monster.hp})\n`))
         }
         break;
       case '3':
@@ -128,7 +134,7 @@ const battle = async (stage, player, monster) => {
 
     // 몬스터의 행동
     monster.attack(player);
-    logs.push(chalk.green(`몬스터가 공격해왔다! `), chalk.red(`${monster.atk}만큼의 데미지를 입었다..\n`));
+    logs.push(chalk.green(`몬스터가 공격해왔다! `), chalk.red(`${monster.atk}만큼의 데미지를 입었다..`), chalk.gray(` \t\t(남은 체력: ${player.hp})\n`));
   }
 
   if (player.hp <= 0) {
@@ -171,10 +177,27 @@ export async function startGame() {
   let stage = 1;
 
   while (stage <= 10) {
+    const bat = new Monster('Bat', 25, 7);
+    const hound = new Monster('Hound', 50, 5);
+    const wisp = new Monster('Wisp', 40, 6);
     let mult = 1 + ((stage - 1) * 0.2);
-    const monster = new Monster('Monster');
-    monster.hp = Math.floor(monster.hp*mult);
-    monster.atk = Math.floor(monster.atk*mult);
+    let mobNum = getRandomInt(0, 2);
+    let monster;
+
+    switch (mobNum) {
+      case 0:
+        monster = bat;
+        break;
+      case 1:
+        monster = hound;
+        break;
+      case 2:
+        monster = wisp;
+        break;
+    }
+
+    monster.hp = Math.floor(monster.hp * mult);
+    monster.atk = Math.floor(monster.atk * mult);
     await battle(stage, player, monster);
 
     if (player.hp <= 0) {
